@@ -8,9 +8,9 @@ main = Blueprint('main', __name__)
 model = load_model('app/skin_cancer_model.h5')
 class_labels = ['nv', 'mel', 'bkl', 'bcc', 'akiec', 'vasc', 'df']
 
-@main.route('/')
+@app.route('/')
 def home():
-    return render_template('index.html')
+    return {"message": "SkinIntel AI Backend is running!"}
 
 @main.route('/predict', methods=['POST'])
 def predict():
