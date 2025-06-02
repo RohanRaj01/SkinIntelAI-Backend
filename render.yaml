@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: skinintel
+    env: python
+    buildCommand: pip install -r SkinIntelAI-Backend/requirements.txt
+    startCommand: gunicorn run:app
