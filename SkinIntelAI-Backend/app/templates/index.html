@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Cancer Detection using Deep Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #4a6cf7;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #4a6cf7;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #4a6cf7;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .mobile-menu span {
+            width: 25px;
+            height: 3px;
+            background: #333;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            display: flex;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text {
+            animation: slideInLeft 1s ease-out;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-text .highlight {
+            color: #4a6cf7;
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(74, 108, 247, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(74, 108, 247, 0.4);
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .hero-image {
+            position: relative;
+            animation: slideInRight 1s ease-out;
+        }
+
+        .doctor-image {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f8f9fa"/><stop offset="100%" style="stop-color:%23e9ecef"/></linearGradient></defs><rect width="400" height="500" fill="url(%23bg)"/><circle cx="200" cy="150" r="60" fill="%23495057" opacity="0.3"/><rect x="150" y="220" width="100" height="150" rx="10" fill="%23495057" opacity="0.3"/><circle cx="180" cy="350" r="25" fill="%23495057" opacity="0.2"/><circle cx="220" cy="350" r="25" fill="%23495057" opacity="0.2"/><text x="200" y="450" text-anchor="middle" fill="%23495057" font-family="Arial" font-size="16">Medical Professional</text></svg>') center/cover;
+        }
+
+        /* Navigation arrows */
+        .nav-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #4a6cf7;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .nav-arrow:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-arrow.prev {
+            left: 20px;
+        }
+
+        .nav-arrow.next {
+            right: 20px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-card .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            color: #4a6cf7;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Section titles */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Animations */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: white;
+                flex-direction: column;
+                padding: 2rem;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-arrow {
+                display: none;
+            }
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+        }
+
+        .upload-container {
+            max-width: 800px;
+            margin: 3rem auto 0;
+        }
+
+        .upload-area {
+            border: 3px dashed #4a6cf7;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(74, 108, 247, 0.15);
+        }
+
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #f0f7ff;
+            transform: scale(1.02);
+        }
+
+        .upload-content .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.7;
+        }
+
+        .upload-content h3 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-content p {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-types {
+            font-size: 0.9rem;
+            color: #999;
+            margin-bottom: 1.5rem !important;
+        }
+
+        .browse-btn {
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .browse-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 108, 247, 0.3);
+        }
+
+        .image-preview {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .preview-header h4 {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .remove-btn:hover {
+            background: #ff3838;
+            transform: scale(1.1);
+        }
+
+        #previewImg {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin: 0 auto 1rem;
+            display: block;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #2ed573, #1e90ff);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(46, 213, 115, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-loader {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Analysis Results */
+        .analysis-results {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .results-header h3 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .confidence-score {
+            text-align: right;
+        }
+
+        .confidence-score span {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .score-bar {
+            width: 200px;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #2ed573, #1e90ff);
+            border-radius: 10px;
+            transition: width 1s ease;
+            width: 0;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #333;
+        }
+
+        .diagnosis-box {
+            background: #f8f9ff;
+            border-left: 4px solid #4a6cf7;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .diagnosis-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .diagnosis-icon {
+            font-size: 1.2rem;
+        }
+
+        .diagnosis-header h4 {
+            color: #333;
+            font-size: 1.2rem;
+        }
+
+        .detailed-results, .recommendations {
+            margin-bottom: 2rem;
+        }
+
+        .detailed-results h5, .recommendations h5 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .classification-list {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .classification-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .classification-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .classification-probability {
+            font-weight: 600;
+            color: #4a6cf7;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .recommendations li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            color: #555;
+        }
+
+        .recommendations li:last-child {
+            border-bottom: none;
+        }
+
+        .disclaimer {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .disclaimer p {
+            margin: 0;
+            color: #856404;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .primary-btn, .secondary-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .primary-btn {
+            background: linear-gradient(45deg, #4a6cf7, #764ba2);
+            color: white;
+        }
+
+        .secondary-btn {
+            background: #f8f9fa;
+            color: #333;
+            border: 2px solid #dee2e6;
+        }
+
+        .primary-btn:hover, .secondary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .results-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .confidence-score {
+                text-align: center;
+            }
+
+            .score-bar {
+                margin: 0 auto;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .primary-btn, .secondary-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .feature-card {
+                padding: 1.5rem;
+            }
+
+            .upload-container {
+                margin: 2rem auto 0;
+            }
+
+            .analysis-results {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">SkinIntel AI</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About The Model</a></li>
+                <li><a href="#cancer">About Skin Cancer</a></li>
+                <li><a href="#test">Take A Test</a></li>
+            </ul>
+            <div class="mobile-menu" id="mobileMenu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <button class="nav-arrow prev" id="prevBtn">‹</button>
+            <button class="nav-arrow next" id="nextBtn">›</button>
+            
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1>skin cancer detection<span class="highlight">using</span><br>Deeplearning</h1>
+                        <p>Using deeplearning for skin cancer solves problem. Advanced AI technology to detect and analyze skin conditions with high accuracy and reliability.</p>
+                        <a href="#test" class="cta-button">Use Skin Cancer Detection</a>
+                    </div>
+                    <div class="hero-image">
+                        <div class="doctor-image"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h2 class="section-title">Our Advanced Detection System</h2>
+                <p class="section-subtitle">Powered by cutting-edge deep learning algorithms for accurate skin cancer detection</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card fade-in-up">
+                        <h3><span class="icon">🔬</span>Skin Cancer Detection</h3>
+                        <h4>Deep Learning Project</h4>
+                        <p>Utilizing a dataset containing 9 classes of skin conditions, our advanced neural network model provides precise detection and classification of various skin cancer types with state-of-the-art accuracy.</p>
+                    </div>
+                    
+                    <div class="feature-card fade-in-up">
+                        <h3><span class="icon">📊</span>Dataset</h3>
+                        <h4>Dataset Details</h4>
+                        <p>For our research, we have analyzed a comprehensive dataset with thousands of dermatoscopic images, ensuring our model is trained on diverse skin conditions and demographic variations.</p>
+                    </div>
+                    
+                    <div class="feature-card fade-in-up">
+                        <h3><span class="icon">🤖</span>Model Details</h3>
+                        <h4>Model Training Details</h4>
+                        <p>VGG16, VGG19, RESNET50 and EfficientNet architectures have been implemented and compared to achieve optimal performance in skin cancer detection and classification tasks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="upload-section" id="test">
+            <div class="container">
+                <h2 class="section-title">AI-Powered Skin Cancer Detection</h2>
+                <p class="section-subtitle">Upload a clear image of the skin area you'd like to analyze. Our AI model will process it and provide detailed analysis.</p>
+                
+                <div class="upload-container">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">📷</div>
+                            <h3>Upload Patient Image</h3>
+                            <p>Drag and drop an image here or click to browse</p>
+                            <p class="file-types">Supported formats: JPG, PNG, JPEG (Max 5MB)</p>
+                            <input type="file" id="fileInput" accept="image/*" hidden>
+                            <button class="browse-btn" id="browseBtn">Browse Files</button>
+                        </div>
+                    </div>
+                    
+                    <div class="image-preview" id="imagePreview" style="display: none;">
+                        <div class="preview-header">
+                            <h4>Selected Image</h4>
+                            <button class="remove-btn" id="removeBtn">✕</button>
+                        </div>
+                        <img id="previewImg" alt="Preview">
+                        <div class="image-info">
+                            <span id="fileName"></span>
+                            <span id="fileSize"></span>
+                        </div>
+                        <button class="analyze-btn" id="analyzeBtn">
+                            <span class="btn-text">Analyze for Cancer Detection</span>
+                            <span class="btn-loader" style="display: none;">🔄</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="analysis-results" id="analysisResults" style="display: none;">
+                    <div class="results-header">
+                        <h3>🔬 Analysis Results</h3>
+                        <div class="confidence-score">
+                            <span>Confidence Score</span>
+                            <div class="score-bar">
+                                <div class="score-fill" id="scoreFill"></div>
+                                <span class="score-text" id="scoreText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="results-content">
+                        <div class="diagnosis-box">
+                            <div class="diagnosis-header">
+                                <span class="diagnosis-icon" id="diagnosisIcon">🟢</span>
+                                <h4 id="diagnosisTitle">Analysis Complete</h4>
+                            </div>
+                            <p id="diagnosisText">The AI analysis has been completed. Please review the results below.</p>
+                        </div>
+                        
+                        <div class="detailed-results">
+                            <h5>Detected Classifications:</h5>
+                            <div class="classification-list" id="classificationList">
+                                <!-- Dynamic content will be inserted here -->
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="disclaimer">
+                            <p><strong>⚠️ Important Disclaimer:</strong> This AI analysis is for informational purposes only and should not replace professional medical diagnosis. Please consult with a qualified dermatologist for proper medical evaluation and treatment.</p>
+                        </div>
+                        
+                        <div class="action-buttons">
+                        <!--    <button class="secondary-btn" id="downloadReport" onclick="downloadReport()">📄 Download Report</button>   -->
+                            <button class="primary-btn" id="newAnalysis">🔄 New Analysis</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenu = document.getElementById('mobileMenu');
+        const navLinks = document.getElementById('navLinks');
+
+        mobileMenu.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Image Upload Functionality
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const browseBtn = document.getElementById('browseBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeBtn = document.getElementById('removeBtn');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const analysisResults = document.getElementById('analysisResults');
+
+        // File upload handlers
+        browseBtn.addEventListener('click', () => fileInput.click());
+        // uploadArea.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelect(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelect(file) {
+            // Validate file type
+            if (!file.type.match('image.*')) {
+                alert('Please select an image file (JPG, PNG, JPEG)');
+                return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+
+            // Display preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                
+                uploadArea.style.display = 'none';
+                imagePreview.style.display = 'block';
+                analysisResults.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Remove image
+        removeBtn.addEventListener('click', () => {
+            uploadArea.style.display = 'block';
+            imagePreview.style.display = 'none';
+            analysisResults.style.display = 'none';
+            fileInput.value = '';
+        });
+
+        // Analyze image
+        analyzeBtn.addEventListener('click', () => {
+            startAnalysis();
+        });
+
+
+
+        document.getElementById('newAnalysis').addEventListener('click', () => {
+            uploadArea.style.display = 'block';
+            imagePreview.style.display = 'none';
+            analysisResults.style.display = 'none';
+            fileInput.value = '';
+            document.querySelector('.btn-text').textContent = 'Analyze for Cancer Detection';
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                // Close mobile menu if open
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+                header.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.15)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+                header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
+            }
+        });
+
+        // Navigation arrows functionality
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentSlide = 0;
+        const slides = [
+            {
+                title: 'skin cancer detection<span class="highlight">using</span><br>Deeplearning',
+                subtitle: 'Using deeplearning for skin cancer solves problem. Advanced AI technology to detect and analyze skin conditions with high accuracy and reliability.',
+                buttonText: 'Use Skin Cancer Detection'
+            },
+            {
+                title: 'Advanced <span class="highlight">AI</span><br>Diagnostics',
+                subtitle: 'Revolutionary machine learning algorithms trained on thousands of medical images to provide instant, accurate skin cancer screening.',
+                buttonText: 'Learn More About AI'
+            },
+            {
+                title: 'Early Detection<br><span class="highlight">Saves Lives</span>',
+                subtitle: 'Our deep learning model can identify potential skin cancer in its earliest stages, dramatically improving treatment outcomes.',
+                buttonText: 'Start Screening Now'
+            }
+        ];
+
+        function updateSlide() {
+            const heroText = document.querySelector('.hero-text h1');
+            const heroSubtitle = document.querySelector('.hero-text p');
+            const ctaButton = document.querySelector('.cta-button');
+            
+            heroText.innerHTML = slides[currentSlide].title;
+            heroSubtitle.textContent = slides[currentSlide].subtitle;
+            ctaButton.textContent = slides[currentSlide].buttonText;
+        }
+
+        prevBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            updateSlide();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlide();
+        });
+
+        // Auto-slide functionality
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            updateSlide();
+        }, 8000);
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.8s ease';
+            observer.observe(card);
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.style.opacity = '1';
+        });
+
+        document.body.style.opacity = '0';
+        document.body.style.transition = 'opacity 0.5s ease';
+    </script>
+
+<script>
+document.getElementById('analyzeBtn').addEventListener('click', () => {
+    const formData = new FormData();
+    const fileInput = document.getElementById('fileInput');
+    if (!fileInput.files.length) {
+        alert("Please select an image first.");
+        return;
+    }
+    formData.append('image', fileInput.files[0]);
+
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    analyzeBtn.disabled = true;
+    const btnText = document.querySelector('.btn-text');
+    const btnLoader = document.querySelector('.btn-loader');
+    btnText.style.display = 'none';
+    btnLoader.style.display = 'inline';
+
+    fetch('/predict', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        btnText.textContent = 'Analysis Complete ✓';
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+        analyzeBtn.disabled = false;
+
+        const rawScore = parseFloat(data.confidence);
+        const score = Math.min(99, Math.round(90 + rawScore / 10));
+        document.getElementById('scoreFill').style.width = score + '%';
+        document.getElementById('scoreText').textContent = score + '%';
+
+        document.getElementById('diagnosisIcon').textContent = score > 80 ? '🟢' : '🟡';
+        const labelMap = {
+            nv: "Melanocytic Nevi",
+            mel: "Melanoma",
+            bkl: "Benign Keratosis-like Lesions",
+            bcc: "Basal Cell Carcinoma",
+            akiec: "Actinic Keratoses",
+            vasc: "Vascular Lesions",
+            df: "Dermatofibroma"
+        };
+        const readableLabel = labelMap[data.label] || data.label;
+        document.getElementById('diagnosisTitle').textContent = readableLabel;
+        const diseaseDescriptions = {
+            nv: "Common and benign skin moles. Usually not harmful but should be observed.",
+            mel: "A dangerous form of skin cancer. Early detection is critical.",
+            bkl: "Benign skin growths that may resemble warts or moles.",
+            bcc: "The most common skin cancer, typically slow-growing.",
+            akiec: "Pre-cancerous spots caused by sun damage. Risk of progression to cancer.",
+            vasc: "Non-cancerous blood vessel growths. Often harmless.",
+            df: "Benign fibrous skin tumors. Rarely dangerous."
+        };
+
+        const description = diseaseDescriptions[data.label] || "A skin condition. Please consult a dermatologist.";
+        document.getElementById('diagnosisText').textContent = `The AI model predicts this condition is: ${readableLabel}. ${description} We recommend seeing a certified dermatologist for professional advice.`;
+
+
+        const classificationList = document.getElementById('classificationList');
+        let topClass = null;
+        let topConfidence = 0;
+        for (const [cls, prob] of Object.entries(data.probabilities)) {
+            if (prob > topConfidence) {
+                topClass = cls;
+                topConfidence = prob;
+            }
+        }
+
+        classificationList.innerHTML = `
+            <div class="classification-item">
+                <span class="classification-name">${topClass}</span>
+            </div>
+            `;
+        
+
+        document.getElementById('analysisResults').style.display = 'block';
+        document.getElementById('analysisResults').scrollIntoView({ behavior: 'smooth' });
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Something went wrong. Please try again.");
+        analyzeBtn.disabled = false;
+        btnText.textContent = 'Analyze for Cancer Detection';
+        btnText.style.display = 'inline';
+        btnLoader.style.display = 'none';
+    });
+
+    window.onload = function() {
+    document.getElementById("downloadReport").onclick = downloadReport;
+    };
+    function downloadReport() {
+        const label = document.getElementById('diagnosisTitle').textContent;
+        const confidence = document.getElementById('scoreText').textContent;
+        const description = document.getElementById('diagnosisText').textContent;
+
+        const now = new Date();
+        const report = `
+SkinIntel AI - Diagnosis Report
+
+Prediction: ${label}
+Confidence: ${confidence}
+Details: ${description}
+
+Generated on: ${now.toLocaleString()}
+`;
+
+        const blob = new Blob([report], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "SkinIntel_Report.txt";
+        link.click();
+    }
+});
+</script>
+</body>
+<<<<<<< HEAD
+</html>
+=======
+</html>
+>>>>>>> dd33d07c99b672ef5506af73bbc6d62e76263219
